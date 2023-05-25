@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ping Pong</title>
+
+    <style>
+        body{
+            background-color: rgb(8, 8, 53);
+        }
+        #game {
+            position: relative;
+            margin: 100px auto;
+            width: 600px;
+            height: 400px;
+            border-radius: 20px;
+            border: 1px solid #fff;
+            overflow: hidden;
+        }
+
+        .paddle {
+            position: absolute;
+            width: 10px;
+            height: 80px;
+            background-color: #fff;
+        }
+
+        #paddle1 {
+            left: 20px;
+            top: 160px;
+        }
+
+        #paddle2 {
+            right: 20px;
+            top: 160px;
+        }
+
+        #ball {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: #fff;
+        }
+
+        .score {
+            position: absolute;
+            font-size: 32px;
+            font-family: Arial;
+            color: #fff;
+            text-align: center;
+        }
+
+        #score1 {
+            left: 50px;
+            top: 50px;
+        }
+
+        #score2 {
+            right: 50px;
+            top: 50px;
+        }
+    </style>
+
+</head>
+
+<body>
+    <div id="game">
+        <div id="paddle1" class="paddle"></div>
+        <div id="paddle2" class="paddle"></div>
+        <div id="ball"></div>
+        <div id="score1" class="score"></div>
+        <div id="score2" class="score"></div>
+    </div>
+
+
+    <script>
+
+        // Get the game elements
+        const game = document.getElementById('game');
+        const paddle1 = document.getElementById('paddle1');
+        const paddle2 = document.getElementById('paddle2');
+        const ball = document.getElementById('ball');
+        const score1 = document.getElementById('score1');
+        const score2 = document.getElementById('score2');
+
+        // Set up the initial game state
+        let ballX = 290;
+        let ballY = 190;
+        let ballSpeedX = 5;
+        let ballSpeedY = 5;
+        let paddle1Y = 160;
+        let paddle2Y = 160;
+        let score1Val = 0;
+        let score2Val = 0;
+
+        // Set up the game loop
+
+        function gameLoop() {
+            // Move the ball
+            // console.log(ballX,"ballX Before");
+            // console.log(ballY,"ballY Before");
+            ballX += ballSpeedX;
+            ballY += ballSpeedY;
+            // console.log(ballX,"ballX After");
+            // console.log(ballY,"ballY After");
+
+            // Check for collisions with walls
+            if (ballY < 0 || ballY > 390) {
+                // console.log(ballSpeedY,"before");
+                ballSpeedY = -ballSpeedY;
+                // console.log(ballSpeedY,"after");
+            }
+
+            // Check for collisions with paddles
+            if (ballX < 30 && ballY > paddle1Y && ballY < paddle1Y + 80) {
+                ballSpeedX = -ballSpeedX;
+            }
+            if (ballX > 570 && ballY > paddle2Y && ballY < paddle2Y + 80) {
+                ballSpeedX = -ballSpeedX;
+            }
+
+            // Check for scoring
+            if (ballX < 0) {
+                ballX = 290;
+                ballY = 190;
+                ballSpeedX = -ballSpeedX;
+                score2Val++;
+                score2.innerHTML = score2Val;
+            }
+            if (ballX > 600) {
+                ballX = 290;
+                ballY = 190;
+                ballSpeedX = -ballSpeedX;
+                score1Val++;
+                score1.innerHTML = score1Val;
+            }
+
+            // Update the ball position
+            ball.style.left = ballX + 'px';
+            ball.style.top = ballY + 'px';
+
+            // Request the next frame
+            window.requestAnimationFrame(gameLoop);
+        }
+
+        // Set up the paddle movement
+        let paddle1Move = 0;
+        let paddle2Move = 0;
+
+        function movePaddles() {
+            paddle1Y += paddle1Move;
+            paddle2Y += paddle2Move;
+
+            // Keep the paddles within the game area
+            paddle1Y = Math.max(Math.min(paddle1Y, 320), 0);
+            paddle2Y = Math.max(Math.min(paddle2Y, 320), 0);
+
+            // Update the paddle positions
+            paddle1.style.top = paddle1Y + 'px';
+            paddle2.style.top = paddle2Y + 'px';
+        }
+
+        // Handle user input
+        document.addEventListener('keydown', event => {
+            if (event.key === 'w') {
+                paddle1Move = -10;
+            }
+            if (event.key === 's') {
+                paddle1Move = 10;
+            }
+            if (event.key === 'ArrowUp') {
+                paddle2Move = -10;
+            }
+            if (event.key === 'ArrowDown') {
+                paddle2Move = 10;
+            }
+        });
+
+        document.addEventListener('keyup', event => {
+            if (event.key === 'w' || event.key === 's') {
+                paddle1Move = 0;
+            }
+            if (event.key === 'ArrowUp' || event.key === 'ArrowDown') {
+                paddle2Move = 0;
+            }
+        });
+
+
+        // Start the game loop
+
+        window.requestAnimationFrame(gameLoop);
+
+
+        // Start the paddle movement interval
+        window.setInterval(movePaddles, 20);
+
+
+    </script>
+
+</body>
+
+</html>
